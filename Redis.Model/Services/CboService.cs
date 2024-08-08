@@ -21,5 +21,10 @@ namespace Redis.Model.Services
         {
             return await _cboRepository.GetById(id);
         }
+
+        public async Task Insert(Cbo cbo)
+        {
+            await _cboRepository.Insert(cbo);
+        }
     }
 }
