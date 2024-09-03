@@ -19,7 +19,7 @@ namespace Redis.Infra.Repositories
 
         public async Task<T> GetById(Guid id)
         {
-            return await _dbContext.Set<T>().FirstOrDefaultAsync();
+            return await _dbContext.Set<T>().FindAsync(id);
         }
 
         public async Task Insert(T entity)

@@ -1,7 +1,9 @@
 using Redis.Infra.Repositories;
+using Redis.Infra.Caches;
 using Redis.Model.Config;
 using Redis.Model.Interfaces;
 using Redis.Model.Services;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +14,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+var appSettings = builder.Configuration.GetSection("AppSettings");
+
+builder.Services.Configure<AppSettings>(appSettings);
 
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<CboService>();
+
+builder.Services.AddSingleton(typeof(ICache<>), typeof(RedisCache<>));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = appSettings["RedisConnection"];
+    options.InstanceName = "redis";
+});
 
 var app = builder.Build();
 
